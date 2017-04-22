@@ -1,0 +1,30 @@
+"Local Option" implementation was used for this project.
+
+The Symbol Table class is used for both global variables and local variables for each scope rather than having 
+two contains (one for global and the other for local). This single symbol table is named according to the suggestions
+as provided in the P3 instructions (STV) and the interface for the class follows the instructions for the processing
+local (eg. push, pop, find).
+
+File Invocation
+---------------
+For some reason, P0 had some issues the first time it was tested in which providing the filename as an argument per
+the instructions (not including the extension) was not working. After meeting with Dr. Janikow and doing additional 
+tests, file invocation appeared to be working as it was prior to my submittal and I was given full credit for the 
+project. From what I understand, we never figured out the root cause for the error and were unable to recreate it 
+again. Therefore, the code for reading in a file was reused for both P1 and P2. I have tested file invocation on 
+Delmar and everything is working fine for me, but this was the case before...so hopefully we will not encounter the
+any more issues with this moving forward.
+
+
+Testing Files
+--------------
+Included in the "test" directory are various testing files. Files that should not generate any errors are named
+good*.4280E02 and files that should generate errors are named bad*.4280E02. These files can be run individually or in
+in batches using two bash scripts included in this directory. goodscript.sh will run all 35 good testing files, and 
+badscript.sh will run all error-ridden files.
+
+
+Output
+-------
+Nothing will be outputted when no semantical errors are found in the parse tree. A sematical error message will be 
+generated if/when any semantical errors occur, along with the line number of where the error occured.

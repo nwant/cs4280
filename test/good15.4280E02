@@ -1,0 +1,11 @@
+BEGIN 
+	VOID a:
+  IF ( a <=< a ) 
+		BEGIN :
+			INPUT a 
+			:
+		END 
+
+
+	: 
+END

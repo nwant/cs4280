@@ -1,0 +1,11 @@
+VOID a
+BEGIN : 
+	FOR ( a == a)
+		BEGIN :
+			INPUT a 
+			:
+		END 
+
+
+	: 
+END

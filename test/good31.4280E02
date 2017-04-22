@@ -1,0 +1,5 @@
+BEGIN 
+	VOID a b:
+  OUTPUT (a - b * 12 /4 ) + b  
+	: 
+END

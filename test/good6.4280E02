@@ -1,0 +1,4 @@
+BEGIN :
+OUTPUT ( 10000 ) 
+: 
+END

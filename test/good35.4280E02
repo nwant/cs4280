@@ -1,0 +1,17 @@
+VOID a b c d
+BEGIN
+	VOID a c d:
+	INPUT a:
+	BEGIN
+		VOID a b c d e:
+		INPUT b:
+			BEGIN 
+				VOID d:
+				INPUT b:
+				BEGIN
+					VOID adfa fdsf f d:
+					INPUT e:
+				END:
+			END:
+	END:
+END

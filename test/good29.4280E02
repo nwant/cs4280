@@ -1,0 +1,5 @@
+BEGIN 
+	VOID a :
+	OUTPUT a / -12 
+	: 
+END

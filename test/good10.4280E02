@@ -1,0 +1,5 @@
+VOID adfd
+BEGIN :
+OUTPUT ( 1 + adfd ) 
+: 
+END

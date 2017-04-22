@@ -1,0 +1,7 @@
+BEGIN 
+VOID a
+:
+
+OUTPUT ( a + 1) 
+: 
+END

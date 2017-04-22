@@ -1,0 +1,6 @@
+VOID x y z
+BEGIN
+:
+x = 1:
+INPUT z:
+END

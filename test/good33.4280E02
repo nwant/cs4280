@@ -1,0 +1,7 @@
+VOID x y z
+BEGIN 
+	VOID w a:
+	OUTPUT -a 
+	:
+END
+

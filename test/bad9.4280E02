@@ -1,0 +1,12 @@
+VOID a b c d
+BEGIN
+	VOID a b c d:
+	INPUT a:
+	OUTPUT b:
+	INPUT c:
+	OUTPUT d:
+	BEGIN
+		VOID a b c d d:
+		INPUT d:
+	END:
+END

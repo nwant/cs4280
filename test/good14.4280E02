@@ -1,0 +1,12 @@
+BEGIN 
+VOID a: 
+  IF ( a >=> a ) 
+		BEGIN 
+			VOID a:
+			INPUT a 
+			:
+		END 
+
+
+	: 
+END

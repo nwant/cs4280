@@ -1,0 +1,4 @@
+BEGIN :
+OUTPUT ( 1 + 1) 
+: 
+END
