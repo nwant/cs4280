@@ -1,6 +1,6 @@
 /* Nathaniel Want (nwqk6)
  * CS4280-E02
- * P3
+ * P4
  * 4/24/2017
  * -----------
  *  sem.h
