@@ -16,7 +16,7 @@
 #include <string>
 #include "node.h"
 #include "parser.h"
-#include "sem.h"
+#include "codegen.h"
 using namespace std;
 
 static const string EXE = "testSem"; // the executable name
@@ -57,7 +57,8 @@ int main(int argc, char* argv[]) {
 	node_t* root = parser(input);	
 	
 	// process static semantics
-	sem(root);	
+	//codegen(root, );	
+
 	
 	// clean up
 	input.close();	
