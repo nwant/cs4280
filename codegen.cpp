@@ -20,9 +20,9 @@ using namespace std;
 
 typedef enum { VAR, LABEL } nameType; 
 typedef enum { LT, LTEQ, GT, GTEQ, EQ, NOTEQ } roType;
+typedef enum { READ, WRITE } varAccess;
 static ST STV = ST();														// the symbol table for  
 static SysStack sysStack = SysStack();				 	// the symbol table "stack" container
-//static vector<int> varsCount;	// counters for variable counts in each scope. Last element in vector is for current scope.
 static int varCount = 0;
 static int labelCount = 0;
 static bool declaringGlobals = true;
@@ -47,18 +47,17 @@ static void processLoop(const node_t*, ofstream&);
 static roType processRO(const node_t*, ofstream&);
 static void processAssign(const node_t*, ofstream&);
 static void printGlobalVars(ofstream&);
-static void verify(const token_t* idtk);
-static void insert(const token_t* idtk, ofstream&);
+static void verify(const token_t*, const varAccess, ofstream&);
+static void insert(const token_t*, ofstream&);
 static string newName(nameType);
-static void printBranchInstructs(roType ro, string outLabel, ofstream& os);
-static void printlabel(string, ofstream&);
+static void printBranchInstructs(roType, string, ofstream&);
+//static void printlabel(string, ofstream&);
 /*----------------------------------------------------------------------*/
 
 void codegen(const node_t* root, ofstream& os) {
 	if (root == NULL)
 		return;
 
-	//varsCount.push_back(0);  // start variable count for global variables
 	processProgram(root, os);
 	os << "STOP" << endl;
 	printGlobalVars(os);
@@ -72,7 +71,6 @@ static void processProgram(const node_t* programNode, ofstream& os) {
 }
 
 static void processBlock(const node_t* blockNode, ofstream& os) {
-	//varsCount.push_back(0);  										
 	sysStack.addLevel();
 
 	processVars(blockNode->child1, os);
@@ -82,11 +80,6 @@ static void processBlock(const node_t* blockNode, ofstream& os) {
 		os << "POP" << endl;
 
 	sysStack.removeLevel();
-	/*for (int i = 0; i < varsCount.back(); i++) {
-		sysStack.pop();								
-		os << "POP" << endl;
-	} 
-	varsCount.pop_back();*/
 }
 
 static void processVars(const node_t* varsNode, ofstream& os) {
@@ -165,7 +158,7 @@ static void processR(const node_t* rNode, ofstream& os) {
 		processExpr(rNode->child1, os); 												// 	ACC <- <expr> result
 	} else {																								 	// case: <R> -> id|#
 		if (rNode->token1->tokenID == IDtk)
-			verify(rNode->token1);
+			verify(rNode->token1, READ, os);
 		os << "LOAD " << rNode->token1->tokenInstance << endl; 	// 	ACC <- id|#
 	}
 }
@@ -205,7 +198,7 @@ static void processStat(const node_t* statNode, ofstream& os) {
 
 
 static void processIn(const node_t* inNode, ofstream& os) {
-	verify(inNode->token1);
+	verify(inNode->token1, WRITE, os);
 	os << "READ " << inNode->token1->tokenInstance << endl;		// id <- Input I/O
 }
 
@@ -266,8 +259,8 @@ static void processLoop(const node_t* ifNode, ofstream& os) {
 }
 
 static void processAssign(const node_t* assignNode, ofstream& os) {
-	verify(assignNode->token1);
 	processExpr(assignNode->child1, os); 												 // ACC <- <expr> result
+	verify(assignNode->token1, WRITE, os);
 	os << "STORE " << assignNode->token1->tokenInstance << endl; // id <- ACC 
 }
 
@@ -316,13 +309,21 @@ static void insert(const token_t* idtk, ofstream& os) {
  * inputs:
  * idtk...the IDtk to verify
  */
-static void verify(const token_t* idtk) {
-	if (sysStack.find(*idtk) == -1 && STV.verify(*idtk) == false)	// has this token been declared at some scope of the program?
+static void verify(const token_t* idtk, const varAccess access, ofstream& os) {
+	int idx; 
+	if ((idx = sysStack.find(*idtk)) != -1) {
+		if (access == READ)
+			os << "STACKR " << idx << endl;
+		else if (access == WRITE)
+			os << "STACKW " << idx << endl;
+	} else if (STV.verify(*idtk) == false)
 		semError(*idtk, "Variable is undeclared");									// no; throw error and quit. Illegal static semantics.	
 }
 
 static void printGlobalVars(ofstream& os) {
-		
+	vector<token_t> globals = STV.getTokens();
+	for (int i=0; i < globals.size(); i++)
+		os << globals.at(i).tokenInstance << " 0" << endl;
 }
 
 static string newName(nameType what) {
@@ -348,6 +349,6 @@ static void printBranchInstructs(roType ro, string outlabel, ofstream& os) {
 	}
 }
 
-static void printlabel(string label, ofstream& os) {
+/*static void printlabel(string label, ofstream& os) {
 	os << label << ": NOOP" << endl;
-}
+}*/

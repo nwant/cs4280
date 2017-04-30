@@ -19,6 +19,7 @@ class ST {
  		ST();
 		void insert(token_t);
 		bool verify(token_t);
+		vector<token_t> getTokens();	
 	private:
 		vector<token_t> table;		
 };

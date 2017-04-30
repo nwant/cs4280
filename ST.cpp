@@ -29,3 +29,8 @@ bool ST::verify(token_t tk) {
 
 	return false;
 }
+
+vector<token_t> ST::getTokens() {
+	vector<token_t> tokens(this->table);
+	return tokens;
+}
