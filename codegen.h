@@ -14,6 +14,6 @@
 #include <fstream>
 #include "node.h"
 
-void codegen(node_t* root, ostream& os);
+void codegen(const node_t* root, ofstream& os);
 
 #endif

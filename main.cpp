@@ -19,10 +19,13 @@
 #include "codegen.h"
 using namespace std;
 
-static const string EXE = "testSem"; // the executable name
-static const string EXT = ".4280E02";     // expected file extention for input data
+static const string EXE = "comp"; // the executable name
+static const string EXT_IN = ".4280E02";     // expected file extention for input data
+static const string EXT_OUT = ".asm";
+static const string DEFAULT_OUT = "out.asm";
 static char* tempfile; 										// the filename of the temporary file 
 static ifstream input;
+static ofstream output;
 
 static void cleanUpThenDie(int signum);
 static void copyData(const char* inputFp, const char* outputFp);
@@ -31,6 +34,7 @@ static void keyboardToFile(const char* outputFp);
 
 int main(int argc, char* argv[]) {
 	char *tempfp; // tempfile file path. used write all input into before building the tree.
+	string inputFp, outputFp;
 	// create a temp file to store all input needed for the tree	
  	mkstemp(tempfp);	
 	// store this filename in global variable in case we have errors and have to failsafe
@@ -40,28 +44,33 @@ int main(int argc, char* argv[]) {
 	// where is the input coming from?
 	if (argc == 1) { // the keyboard / directed file stream
 		keyboardToFile(tempfp);
+		outputFp = DEFAULT_OUT;
 	} else if (argc == 2) { // a file
-		string inputFp (argv[1]);
-		inputFp += EXT;
+		outputFp = inputFp = argv[1];
+		inputFp += EXT_IN;
+		outputFp += EXT_OUT;
 		copyData(inputFp.c_str(), tempfp);	
 	} else { // unknown: error
-		cout << "Exceeded number of valid arguments. Proper usage: " << EXE << " [file] where file has a " << EXT << " extention." << endl;
+		cout << "Exceeded number of valid arguments. Proper usage: " << EXE << " [file] where file has a " << EXT_IN << " extention." << endl;
 		exit(1);
 	}
-
-	signal(SIGINT, cleanUpThenDie); // register the signalhandler
 	
-	// perform scanner test
+	// register the signalhandler. Each module will raise this signal after 
+	// producing an error to the user if/when an error occurs.
+	signal(SIGINT, cleanUpThenDie); 
+	
+	// execute front end.
 	input.open(tempfp);
-	
 	node_t* root = parser(input);	
-	
-	// process static semantics
-	//codegen(root, );	
-
-	
-	// clean up
 	input.close();	
+	
+	// execute back end.
+	output.open(outputFp.c_str()); 
+	codegen(root, output);	
+	cout << "Static Semantics Passed!" << endl;
+	output.close();
+
+	// clean up
 	remove(tempfp);
 
 	return 0;
@@ -77,6 +86,7 @@ int main(int argc, char* argv[]) {
  */
 static void cleanUpThenDie(int signum) {
 	input.close();
+	output.close();
 	remove(tempfile);
 	free(tempfile);
 	exit(signum);

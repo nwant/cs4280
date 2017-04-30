@@ -1,12 +1,11 @@
 /* Nathaniel Want (nwqk6)
  * CS4280-E02
  * P4
- * 4/24/2017
+ * 5/9/2017
  * -----------
  *  ST.h
  * --------
- *  Contains the definition for the symbol table container 
- *
+ *  Contains the definition for the symbol table
  */
 #ifndef ST_H
 #define ST_H
@@ -17,14 +16,11 @@ using namespace std;
 
 class ST {
 	public:
-		//void insert(token_t tk);
-	//	bool verify(const token_t tk);
-		void push(const token_t tk);
-		void pop(void);
-		int find(const token_t tk);	
+ 		ST();
+		void insert(token_t);
+		bool verify(token_t);
 	private:
-		vector<token_t> stack;
+		vector<token_t> table;		
 };
 
 #endif
-

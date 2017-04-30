@@ -2,5 +2,5 @@
 
 for i in {1..9}
 do
-	./testSem test/bad$i
+	./comp test/bad$i
 done

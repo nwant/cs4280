@@ -4,14 +4,14 @@
 # 4/24/2017
 CC=g++
 FLAGS=-std=c++11
-EXE=testSem #TODO: rename exe
-OBJS=scannerclass.o scanner.o parser.o ST.o codegen.o 
+EXE=comp 
+OBJS=scannerclass.o scanner.o parser.o SysStack.o ST.cpp codegen.o 
 MAIN=main.cpp errors.cpp token.cpp 
-TMP=
+TMP=*.asm test/*.asm
 M1=frontEnd
 M1FILES=scannerclass.cpp scanner.cpp parser.cpp
 M2=backEnd
-M2FILES=codegen.cpp ST.cpp
+M2FILES=codegen.cpp SysStack.cpp ST.cpp
 
 
 $(EXE) : $(MAIN) $(M1) $(M2) 

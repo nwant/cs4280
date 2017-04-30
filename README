@@ -1,4 +1,5 @@
-"Local Option" implementation was used for this project.
+P1: The project uses the table/driver option. These files can be found in the same folder in this README file. The graph is in FSA_graph.pdf and the table is in FSA_table.xlsx.
+P3/P4: "Local Option" implementation was used for both.
 
 The Symbol Table class is used for both global variables and local variables for each scope rather than having 
 two contains (one for global and the other for local). This single symbol table is named according to the suggestions
