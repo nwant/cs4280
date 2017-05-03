@@ -1,0 +1,8 @@
+BEGIN 
+VOID x y z w:
+INPUT x:
+INPUT y:
+INPUT z:
+w = (x + y + z):
+OUTPUT w:
+END

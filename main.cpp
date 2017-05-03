@@ -67,11 +67,12 @@ int main(int argc, char* argv[]) {
 	// execute back end.
 	output.open(outputFp.c_str()); 
 	codegen(root, output);	
-	cout << "Static Semantics Passed!" << endl;
 	output.close();
 
 	// clean up
 	remove(tempfp);
+	
+	cout << "Target file \"" << outputFp << "\" successfully created." << endl;
 
 	return 0;
 }

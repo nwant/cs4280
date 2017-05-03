@@ -1,5 +1,5 @@
-BEGIN
-VOID x: 
+BEGIN 
+VOID x:
 x = 3:
 FOR (x >=> 0)
 BEGIN:

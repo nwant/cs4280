@@ -20,7 +20,7 @@ using namespace std;
 
 typedef enum { VAR, LABEL } nameType; 
 typedef enum { LT, LTEQ, GT, GTEQ, EQ, NOTEQ } roType;
-typedef enum { READ, WRITE } varAccess;
+typedef enum {VAR_TO_ACC, VAR_TO_IO, ACC_TO_VAR, IO_TO_VAR } dataflow;
 static ST STV = ST();														// the symbol table for  
 static SysStack sysStack = SysStack();				 	// the symbol table "stack" container
 static int varCount = 0;
@@ -46,12 +46,14 @@ static void processIf(const node_t*, ofstream&);
 static void processLoop(const node_t*, ofstream&);
 static roType processRO(const node_t*, ofstream&);
 static void processAssign(const node_t*, ofstream&);
-static void printGlobalVars(ofstream&);
-static void verify(const token_t*, const varAccess, ofstream&);
+static void printVars(ofstream&);
+static void verify(const token_t*);
 static void insert(const token_t*, ofstream&);
+static bool isGlobal(const token_t*);
+static int sysStackOffset(const token_t*);
 static string newName(nameType);
+static void printDataflow(const token_t*, dataflow, ofstream&);
 static void printBranchInstructs(roType, string, ofstream&);
-//static void printlabel(string, ofstream&);
 /*----------------------------------------------------------------------*/
 
 void codegen(const node_t* root, ofstream& os) {
@@ -60,7 +62,7 @@ void codegen(const node_t* root, ofstream& os) {
 
 	processProgram(root, os);
 	os << "STOP" << endl;
-	printGlobalVars(os);
+	printVars(os);
 }
 
 
@@ -157,9 +159,12 @@ static void processR(const node_t* rNode, ofstream& os) {
 	if (rNode->token1 == NULL) { 															// case: <R> -> <expr>
 		processExpr(rNode->child1, os); 												// 	ACC <- <expr> result
 	} else {																								 	// case: <R> -> id|#
-		if (rNode->token1->tokenID == IDtk)
-			verify(rNode->token1, READ, os);
-		os << "LOAD " << rNode->token1->tokenInstance << endl; 	// 	ACC <- id|#
+		if (rNode->token1->tokenID == IDtk) {
+			verify(rNode->token1);
+			printDataflow(rNode->token1, VAR_TO_ACC, os);						// ACC <- id
+		} else {
+			os << "LOAD " << rNode->token1->tokenInstance << endl; 	// 	ACC <- #
+		}
 	}
 }
 
@@ -198,8 +203,9 @@ static void processStat(const node_t* statNode, ofstream& os) {
 
 
 static void processIn(const node_t* inNode, ofstream& os) {
-	verify(inNode->token1, WRITE, os);
-	os << "READ " << inNode->token1->tokenInstance << endl;		// id <- Input I/O
+	verify(inNode->token1);
+	//os << "READ " << inNode->token1->tokenInstance << endl;		// id <- Input I/O
+	printDataflow(inNode->token1, IO_TO_VAR, os);
 }
 
 static void processOut(const node_t* outNode, ofstream& os) {
@@ -260,8 +266,9 @@ static void processLoop(const node_t* ifNode, ofstream& os) {
 
 static void processAssign(const node_t* assignNode, ofstream& os) {
 	processExpr(assignNode->child1, os); 												 // ACC <- <expr> result
-	verify(assignNode->token1, WRITE, os);
-	os << "STORE " << assignNode->token1->tokenInstance << endl; // id <- ACC 
+	verify(assignNode->token1);
+	printDataflow(assignNode->token1, ACC_TO_VAR, os);
+	//os << "STORE " << assignNode->token1->tokenInstance << endl; // id <- ACC 
 }
 
 static roType processRO(const node_t* roNode, ofstream& os) {
@@ -301,6 +308,59 @@ static void insert(const token_t* idtk, ofstream& os) {
 }
 
 
+static void printDataflow(const token_t* idtk, dataflow flow, ofstream& os) {
+	int stackOffset = sysStackOffset(idtk);
+
+	switch(flow) {
+		case VAR_TO_ACC:
+			if (isGlobal(idtk))
+				os << "LOAD " << idtk->tokenInstance << endl;
+			else
+				os << "STACKR " << stackOffset << endl;
+			break;
+		
+		case VAR_TO_IO:
+			if (isGlobal(idtk))
+				os << "WRITE " << idtk->tokenInstance << endl;
+			else {
+				os << "STACKR " << stackOffset << endl;
+				string temp = newName(VAR);
+				os << "STORE " << temp << endl;
+				os << "WRITE " << temp << endl;
+			}
+			break;
+		
+		case ACC_TO_VAR:
+			if (isGlobal(idtk))
+				os << "STORE " << idtk->tokenInstance << endl;
+			else 
+				os << "STACKW " << stackOffset << endl;
+			break;
+
+		case IO_TO_VAR:
+			if (isGlobal(idtk))
+				os << "READ " << idtk->tokenInstance << endl;
+			else {
+				string temp = newName(VAR);
+				os << "READ " << temp << endl;
+				os << "LOAD " << temp << endl;
+				os << "STACKW " << stackOffset << endl;
+			}
+			break;
+
+		default:
+			break;
+	};
+}
+
+static bool isGlobal(const token_t* idtk) {
+	return STV.verify(*idtk); 
+}
+
+static int sysStackOffset(const token_t* idtk) {
+	return sysStack.find(*idtk);
+}	
+
 /**verify
  * -------
  * Verify that an IDtk instance has already been declared in program. Throws
@@ -309,21 +369,21 @@ static void insert(const token_t* idtk, ofstream& os) {
  * inputs:
  * idtk...the IDtk to verify
  */
-static void verify(const token_t* idtk, const varAccess access, ofstream& os) {
-	int idx; 
-	if ((idx = sysStack.find(*idtk)) != -1) {
-		if (access == READ)
-			os << "STACKR " << idx << endl;
-		else if (access == WRITE)
-			os << "STACKW " << idx << endl;
-	} else if (STV.verify(*idtk) == false)
-		semError(*idtk, "Variable is undeclared");									// no; throw error and quit. Illegal static semantics.	
+static void verify(const token_t* idtk) {
+	if (sysStackOffset(idtk) == -1 && !isGlobal(idtk))
+		semError(*idtk, "Variable is undeclared.");
 }
 
-static void printGlobalVars(ofstream& os) {
+static void printVars(ofstream& os) {
+	// print all global variables
+	int i;
 	vector<token_t> globals = STV.getTokens();
-	for (int i=0; i < globals.size(); i++)
+	for (i=0; i < globals.size(); i++)
 		os << globals.at(i).tokenInstance << " 0" << endl;
+
+	// print all used local variables
+	for (i=0; i < varCount; i++)
+		os << "V" << i << " 0" <<  endl;
 }
 
 static string newName(nameType what) {
@@ -349,6 +409,3 @@ static void printBranchInstructs(roType ro, string outlabel, ofstream& os) {
 	}
 }
 
-/*static void printlabel(string label, ofstream& os) {
-	os << label << ": NOOP" << endl;
-}*/
