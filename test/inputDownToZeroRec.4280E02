@@ -1,0 +1,14 @@
+VOID x y
+BEGIN :
+  INPUT x :
+	  FOR ( x >=> = 0 )
+		  BEGIN :
+			    y = x :
+					    FOR ( y >=> = 0 )
+							    BEGIN :
+									      OUTPUT y :
+												      y = y - 1 :
+															    END :
+																	    x = x - 1 :
+																			  END :
+																				END

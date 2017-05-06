@@ -1,0 +1,10 @@
+VOID x y 
+BEGIN
+  VOID z :
+	  OUTPUT x :
+		  BEGIN 
+			   VOID w :
+				    OUTPUT x + w :
+						  END :
+							  OUTPUT x + y + z :
+								END

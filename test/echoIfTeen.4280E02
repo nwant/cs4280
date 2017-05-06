@@ -1,0 +1,11 @@
+VOID x 
+BEGIN :
+  INPUT x :
+	  IF ( x >=> = 13 )
+		  BEGIN :
+			    IF ( x <=< = 19 )
+					    BEGIN :
+							      OUTPUT x :
+										    END : 
+												  END :
+													END

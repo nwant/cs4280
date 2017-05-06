@@ -24,6 +24,7 @@ static const string EXT_IN = ".4280E02";     // expected file extention for inpu
 static const string EXT_OUT = ".asm";
 static const string DEFAULT_OUT = "out.asm";
 static char* tempfile; 										// the filename of the temporary file 
+static const char* outfile;
 static ifstream input;
 static ofstream output;
 
@@ -34,6 +35,7 @@ static void keyboardToFile(const char* outputFp);
 
 int main(int argc, char* argv[]) {
 	char *tempfp; // tempfile file path. used write all input into before building the tree.
+	//string inputFp;
 	string inputFp, outputFp;
 	// create a temp file to store all input needed for the tree	
  	mkstemp(tempfp);	
@@ -54,6 +56,7 @@ int main(int argc, char* argv[]) {
 		cout << "Exceeded number of valid arguments. Proper usage: " << EXE << " [file] where file has a " << EXT_IN << " extention." << endl;
 		exit(1);
 	}
+	outfile = outputFp.c_str();
 	
 	// register the signalhandler. Each module will raise this signal after 
 	// producing an error to the user if/when an error occurs.
@@ -63,7 +66,7 @@ int main(int argc, char* argv[]) {
 	input.open(tempfp);
 	node_t* root = parser(input);	
 	input.close();	
-	
+
 	// execute back end.
 	output.open(outputFp.c_str()); 
 	codegen(root, output);	
@@ -88,6 +91,7 @@ int main(int argc, char* argv[]) {
 static void cleanUpThenDie(int signum) {
 	input.close();
 	output.close();
+	remove(outfile);
 	remove(tempfile);
 	free(tempfile);
 	exit(signum);

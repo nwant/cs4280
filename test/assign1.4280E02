@@ -1,0 +1,5 @@
+VOID x 
+BEGIN :
+  x = 1 :
+	  OUTPUT x :
+		END

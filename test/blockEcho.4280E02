@@ -1,0 +1,7 @@
+VOID x 
+BEGIN :
+  BEGIN :
+	    INPUT x :
+			  END :
+				  OUTPUT x :
+					END

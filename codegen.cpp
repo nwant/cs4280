@@ -136,10 +136,10 @@ static void processT(const node_t* tNode, ofstream& os) {
   } else {																	// case: <T> -> <F> *|/ <T>
 		processT(tNode->child2, os); 						// 	ACC <- result <T>
 		string temp = newName(VAR);
-		os << "STORE temp" << endl;							// 	temp <- ACC (<T>)
+		os << "STORE " << temp << endl;							// 	temp <- ACC (<T>)
 		processF(tNode->child1, os); 						// 	ACC <- result <F>
 		if (tNode->token1->tokenID == STARtk)  	// 	case: <T> -> <F> * <T>
-			os << "MULTI " << temp << endl;				// 		ACC <- ACC (<F>) * temp (<T>)
+			os << "MULT " << temp << endl;				// 		ACC <- ACC (<F>) * temp (<T>)
 		else																		// 	case: <T> -> <F> / <T> 
 			os << "DIV " << temp << endl;					//		ACC <- ACC (<F>) / temp (<T>)
 	}
@@ -150,7 +150,7 @@ static void processF(const node_t* fNode, ofstream& os) {
 		processR(fNode->child1, os);	 	// 	ACC <- <R> result
 	} else { 										 			// case: <F> -> - <F>
 		processF(fNode->child1, os);   	// 	ACC <- <F> result
-		os << "MULTI -1" << endl;  			// 	ACC <- ACC (<F>) * -1
+		os << "MULT -1" << endl;  			// 	ACC <- ACC (<F>) * -1
 	}
 }
 
@@ -354,7 +354,7 @@ static void printDataflow(const token_t* idtk, dataflow flow, ofstream& os) {
 }
 
 static bool isGlobal(const token_t* idtk) {
-	return STV.verify(*idtk); 
+	return sysStackOffset(idtk) == -1; 
 }
 
 static int sysStackOffset(const token_t* idtk) {
