@@ -255,7 +255,7 @@ static void processR(const node_t* rNode, ofstream& os) {
 		processExpr(rNode->child1, os); 												// 	ACC <- <expr> result
 	} else {																								 	// case: <R> -> id|#
 		if (rNode->token1->tokenID == IDtk) {
-			verifyVars(rNode->token1);
+			verifyVar(rNode->token1);
 			printDataflow(rNode->token1, VAR_TO_ACC, os);						// ACC <- id
 		} else {
 			os << "LOAD " << rNode->token1->tokenInstance << endl; 	// 	ACC <- #
@@ -335,7 +335,7 @@ static void processStat(const node_t* statNode, ofstream& os) {
  * os......the output filestream to generate the target language to.
  */
 static void processIn(const node_t* inNode, ofstream& os) {
-	verifyVars(inNode->token1);
+	verifyVar(inNode->token1);
 	printDataflow(inNode->token1, IO_TO_VAR, os);
 }
 
@@ -439,7 +439,7 @@ static void processLoop(const node_t* ifNode, ofstream& os) {
  */
 static void processAssign(const node_t* assignNode, ofstream& os) {
 	processExpr(assignNode->child1, os); 												 // ACC <- <expr> result
-	verifyVars(assignNode->token1);
+	verifyVar(assignNode->token1);
 	printDataflow(assignNode->token1, ACC_TO_VAR, os);
 }
 
@@ -479,8 +479,8 @@ static roType processRO(const node_t* roNode) {
 static void insertVar(const token_t* idtk, ofstream& os) {
 	if (declaringGlobals) { // global
 		// has this variable already been declared globally?
-		if (STV.verifyVars(*idtk) == false)	
-			STV.insertVar(*idtk);														// no; ok. add to symbol table
+		if (STV.verify(*idtk) == false)	
+			STV.insert(*idtk);														// no; ok. add to symbol table
 		else
 			semError(*idtk, "Variable already declared in same scope."); // yes; error   
 	} else {   // local
