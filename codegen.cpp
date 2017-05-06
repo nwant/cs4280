@@ -47,14 +47,14 @@ static void processIf(const node_t*, ofstream&);
 static void processLoop(const node_t*, ofstream&);
 static roType processRO(const node_t*);
 static void processAssign(const node_t*, ofstream&);
-static void printVars(ofstream&);
-static void verify(const token_t*);
-static void insert(const token_t*, ofstream&);
+static void verifyVar(const token_t*);
+static void insertVar(const token_t*, ofstream&);
 static bool isGlobal(const token_t*);
 static int sysStackOffset(const token_t*);
 static string newName(nameType);
 static void printDataflow(const token_t*, dataflow, ofstream&);
 static void printBranchInstructs(roType, string, ofstream&);
+static void printVars(ofstream&);
 /*----------------------------------------------------------------------*/
 
 
@@ -128,7 +128,7 @@ static void processVars(const node_t* varsNode, ofstream& os) {
 	if (varsNode == NULL) {										// case: <vars> -> empty
 		return;
 	} else {																	// case: <vars> -> id <mvars>
-		insert(varsNode->token1, os);
+		insertVar(varsNode->token1, os);
 		processMvars(varsNode->child1, os);
 	}
 }
@@ -147,7 +147,7 @@ static void processMvars(const node_t* mvarsNode, ofstream& os) {
 	if (mvarsNode == NULL)										// case: <mvars> -> empty
 		return;
 	else {																		// case: <mvars> -> id <mvars>
-		insert(mvarsNode->token1, os);
+		insertVar(mvarsNode->token1, os);
 		processMvars(mvarsNode->child1, os);	
 	}
 }
@@ -255,7 +255,7 @@ static void processR(const node_t* rNode, ofstream& os) {
 		processExpr(rNode->child1, os); 												// 	ACC <- <expr> result
 	} else {																								 	// case: <R> -> id|#
 		if (rNode->token1->tokenID == IDtk) {
-			verify(rNode->token1);
+			verifyVars(rNode->token1);
 			printDataflow(rNode->token1, VAR_TO_ACC, os);						// ACC <- id
 		} else {
 			os << "LOAD " << rNode->token1->tokenInstance << endl; 	// 	ACC <- #
@@ -335,7 +335,7 @@ static void processStat(const node_t* statNode, ofstream& os) {
  * os......the output filestream to generate the target language to.
  */
 static void processIn(const node_t* inNode, ofstream& os) {
-	verify(inNode->token1);
+	verifyVars(inNode->token1);
 	printDataflow(inNode->token1, IO_TO_VAR, os);
 }
 
@@ -439,7 +439,7 @@ static void processLoop(const node_t* ifNode, ofstream& os) {
  */
 static void processAssign(const node_t* assignNode, ofstream& os) {
 	processExpr(assignNode->child1, os); 												 // ACC <- <expr> result
-	verify(assignNode->token1);
+	verifyVars(assignNode->token1);
 	printDataflow(assignNode->token1, ACC_TO_VAR, os);
 }
 
@@ -465,7 +465,7 @@ static roType processRO(const node_t* roNode) {
 }
 
 
-/**insert
+/**insertVar
  * -------
  * attempt to insert an id the symbol table (if global) or push onto the system stack
  * (if local).. Throws error if the same token instance has already been declared in 
@@ -476,11 +476,11 @@ static roType processRO(const node_t* roNode) {
  * idtk...the IDtk to insert into the symbol table
  * os......the output filestream to generate the target language to.
  */
-static void insert(const token_t* idtk, ofstream& os) {
+static void insertVar(const token_t* idtk, ofstream& os) {
 	if (declaringGlobals) { // global
 		// has this variable already been declared globally?
-		if (STV.verify(*idtk) == false)	
-			STV.insert(*idtk);														// no; ok. add to symbol table
+		if (STV.verifyVars(*idtk) == false)	
+			STV.insertVar(*idtk);														// no; ok. add to symbol table
 		else
 			semError(*idtk, "Variable already declared in same scope."); // yes; error   
 	} else {   // local
@@ -526,7 +526,7 @@ static int sysStackOffset(const token_t* idtk) {
 }	
 
 
-/**verify
+/**verifyVar
  * -------
  * Verify that an IDtk instance has already been declared in program. Throws
  * error if the IDtk instance has not been declared in the program.
@@ -534,19 +534,20 @@ static int sysStackOffset(const token_t* idtk) {
  * inputs:
  * idtk...the IDtk to verify
  */
-static void verify(const token_t* idtk) {
+static void verifyVar(const token_t* idtk) {
 	if (sysStackOffset(idtk) == -1 && !isGlobal(idtk))
 		semError(*idtk, "Variable is undeclared.");
 }
 
 
-/**verify
+/**newName
  * -------
- * Verify that an IDtk instance has already been declared in program. Throws
- * error if the IDtk instance has not been declared in the program.
+ * generate a new name for a temporary variable or for a label.
  *
  * inputs:
- * idtk...the IDtk to verify
+ * what...the type of name to generate (e.g. temp var or label)
+ *
+ * returns the generated name.
  */
 static string newName(nameType what) {
 	return (what == VAR)  

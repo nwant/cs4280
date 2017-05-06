@@ -24,6 +24,11 @@ Input Expectations
 All temparorary variables for scoping purposes will start will be V0, V1, ..., V99. No variables used in the .4280E02 program
 should be named using this convention or unexpected results will likely occur.
 
+The system stack has been limited to 100 (locally scoped) variables (any more that this will cause a stack overflow and the compiler program will
+exit). Some of the code generation functions may generate temporary variables, of which will also be used on the stack. Therefore, if the total 
+number of local variables declared in one nested block gets close to 100, a stack overflow may occur even if the total count from the programmer's
+perspective is less than 100.
+
 
 Errors
 -----------
