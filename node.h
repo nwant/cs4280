@@ -1,11 +1,11 @@
 /* Nathaniel Want (nwqk6)
  * CS4280-E02
  * P4
- * 4/24/2017
+ * 5/9/2017
  * -----------
  *  node.h
  * --------
- *
+ * definition/implementation for a node in the parse tree.
  */
 #ifndef NODE_H
 #define NODE_H

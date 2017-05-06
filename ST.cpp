@@ -13,9 +13,7 @@
 #include "token.h"
 using namespace std;
 
-ST::ST() {
-
-}
+ST::ST() { }
 
 void ST::insert(token_t tk) {
 	this->table.push_back(tk);

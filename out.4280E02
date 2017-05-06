@@ -1,9 +1,0 @@
-BEGIN
-VOID x: 
-x = 3:
-FOR (x >=> 0)
-BEGIN:
-	OUTPUT x:
-	x = x - 1:
-	END:
-END

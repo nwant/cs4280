@@ -1,12 +1,12 @@
 /* Nathaniel Want (nwqk6)
  * CS4280-E02
  * P4
- * 4/24/2017
+ * 5/9/2017
  * -----------
  * codegen.h
  * --------
- * The declarations/prototypes for functions 
- * pertaining to code generation in the compiler back end
+ * the prototype declarations for all backend functionality
+ * of the compiler as well as statical semantics verification.
  */
 #ifndef CODEGEN_H
 #define CODEGEN_H

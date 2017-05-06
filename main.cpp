@@ -1,11 +1,11 @@
 /* Nathaniel Want (nwqk6)
  * CS4280-E02
  * P4
- * 4/24/2017
+ * 5/9/2017
  * ----------
  * main.cpp
  * ---------
- * the main application for P1. Run a test on the scanner module using testScanner.
+ * the main functionality for the .4280 to .asm compilier 
  */
 #include <csignal>
 #include <fstream>
@@ -19,23 +19,25 @@
 #include "codegen.h"
 using namespace std;
 
-static const string EXE = "comp"; // the executable name
-static const string EXT_IN = ".4280E02";     // expected file extention for input data
-static const string EXT_OUT = ".asm";
-static const string DEFAULT_OUT = "out.asm";
-static char* tempfile; 										// the filename of the temporary file 
-static const char* outfile;
-static ifstream input;
-static ofstream output;
+static const string EXE = "comp"; 						// the executable name
+static const string EXT_IN = ".4280E02";      // expected file extention for input data
+static const string EXT_OUT = ".asm";					// target file extention
+static const string DEFAULT_OUT = "out.asm";	// target file when input from keyboard
+static char* tempfile; 												// the filename of the temporary file 
+static const char* outfile;										// the filename of the target file
+static ifstream input;												// the input filestream
+static ofstream output;												// the output filestream
 
+
+/****************** helper function protocols *********************/
 static void cleanUpThenDie(int signum);
 static void copyData(const char* inputFp, const char* outputFp);
 static void fileOkOrDie(const char* fp); 
 static void keyboardToFile(const char* outputFp); 
+/*----------------------------------------------------------------*/
 
 int main(int argc, char* argv[]) {
 	char *tempfp; // tempfile file path. used write all input into before building the tree.
-	//string inputFp;
 	string inputFp, outputFp;
 	// create a temp file to store all input needed for the tree	
  	mkstemp(tempfp);	
@@ -56,6 +58,7 @@ int main(int argc, char* argv[]) {
 		cout << "Exceeded number of valid arguments. Proper usage: " << EXE << " [file] where file has a " << EXT_IN << " extention." << endl;
 		exit(1);
 	}
+	// make outfile path available to other helper function.
 	outfile = outputFp.c_str();
 	
 	// register the signalhandler. Each module will raise this signal after 

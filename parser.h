@@ -1,7 +1,7 @@
 /* Nathaniel Want (nwqk6)
  * CS4280-E02
  * P4
- * 4/24/2017
+ * 5/9/2017
  * -----------
  *  parser.h
  * --------
@@ -14,6 +14,6 @@
 #include "node.h"
 using namespace std;
 
-//extern ifstream *input;
 node_t* parser(ifstream& input);
+
 #endif

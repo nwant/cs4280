@@ -1,10 +1,12 @@
 P1: The project uses the table/driver option. These files can be found in the same folder in this README file. The graph is in FSA_graph.pdf and the table is in FSA_table.xlsx.
 P3/P4: "Local Option" implementation was used for both.
 
-The Symbol Table class is used for both global variables and local variables for each scope rather than having 
-two contains (one for global and the other for local). This single symbol table is named according to the suggestions
-as provided in the P3 instructions (STV) and the interface for the class follows the instructions for the processing
-local (eg. push, pop, find).
+Modifications from P3 (Static Semantics)
+----------------------------------------
+The Symbol Table implementation was modifed after submitting P3. In P3, all local and globals were stored in the same data structure 
+(the lowest level of the stack contained the global scope). In P4, this was modified so that the final implementation resembles the 
+STV and system stack suggested implementation as stated in the P3 instructions.
+
 
 File Invocation
 ---------------
@@ -17,6 +19,22 @@ Delmar and everything is working fine for me, but this was the case before...so 
 any more issues with this moving forward.
 
 
+Input Expectations
+-------------------
+All temparorary variables for scoping purposes will start will be V0, V1, ..., V99. No variables used in the .4280E02 program
+should be named using this convention or unexpected results will likely occur.
+
+
+Errors
+-----------
+If/when an error occurs, the error will be printed along with the error "class" (i.e. parsing, scanning, or semantical)
+and the corresponding line number the error was found. If there are multiple problems with a file, the first encountered 
+error will be the only error that will be printed (parsing errors will print before scanning errors and scanning errors
+will print before semantical errors. If more than one error within the same error class, the first error found left-to-right
+and up-and-down in the code will be the error that is printed out). Once an error prints, all temporary and output files created
+by the compiler will be removed.
+
+
 Testing Files
 --------------
 Included in the "test" directory are various testing files. Files that should not generate any errors are named
@@ -24,8 +42,12 @@ good*.4280E02 and files that should generate errors are named bad*.4280E02. Thes
 in batches using two bash scripts included in this directory. goodscript.sh will run all 35 good testing files, and 
 badscript.sh will run all error-ridden files.
 
+In addition, all of the test files as posted for P3 and P4 are included in the test folder, and can also be invoked along with
+my own test files using the goodscript.sh and badscript.sh files for good and bad files respectively.
+
 
 Output
 -------
-Nothing will be outputted when no semantical errors are found in the parse tree. A sematical error message will be 
-generated if/when any semantical errors occur, along with the line number of where the error occured.
+The asm file will be outputted in the same manner as listed in the instructions (same file name as the input file name except with a .asm 
+extension or out.asm in the case of file redirection. If any errors occur (parsing, scanning, and/or semantical), the corresponding error
+will print to standard output and no target .asm file will be generated.
