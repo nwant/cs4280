@@ -7,8 +7,8 @@ do
 done
 
 #test static semantics files (P3)
-./comp test/testSem_good1
-./comp test/testSem_good2
+./comp test/testSem_good_1
+./comp test/testSem_good_2
 
 #test all code gen files (P4)
 ./comp test/111

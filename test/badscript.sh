@@ -6,7 +6,7 @@ do
 done
 
 #test static semantics files (P3)
-./comp test/testSem_bad1
-./comp test/testSem_bad2
-./comp test/testSem_bad3
+./comp test/testSem_bad_1
+./comp test/testSem_bad_2
+./comp test/testSem_bad_3
 

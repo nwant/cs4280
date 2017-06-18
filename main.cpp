@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
 	// clean up
 	remove(tempfp);
 	
-	cout << "Target file \"" << outputFp << "\" successfully created." << endl;
+	cout << "Target file successfully created. -> " << outputFp << endl;
 
 	return 0;
 }

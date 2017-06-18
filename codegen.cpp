@@ -9,6 +9,7 @@
  * of the compiler as well as statical semantics verification.
  */
 #include <fstream>
+//#include <iostream>
 #include <string>
 #include <vector>
 #include "codegen.h"
@@ -477,6 +478,7 @@ static roType processRO(const node_t* roNode) {
  * os......the output filestream to generate the target language to.
  */
 static void insertVar(const token_t* idtk, ofstream& os) {
+	//cout << "inserting " << idtk->tokenInstance << endl;
 	if (declaringGlobals) { // global
 		// has this variable already been declared globally?
 		if (STV.verify(*idtk) == false)	
@@ -535,7 +537,10 @@ static int sysStackOffset(const token_t* idtk) {
  * idtk...the IDtk to verify
  */
 static void verifyVar(const token_t* idtk) {
-	if (sysStackOffset(idtk) == -1 && !isGlobal(idtk))
+	//cout << "verifying var " << idtk->tokenInstance;
+	//cout << " sysStackOffset: " << sysStackOffset(idtk);
+	//cout << " isGlobal: " << isGlobal(idtk) << endl;
+	if (sysStackOffset(idtk) == -1 && STV.verify(*idtk) == false)
 		semError(*idtk, "Variable is undeclared.");
 }
 

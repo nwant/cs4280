@@ -1,0 +1,10 @@
+#!/usr/bin/expect
+# 
+# run all outputted targets from P4 test on the virtual machine 
+
+set input 13
+
+send_user "Echo if Teen \n"
+eval spawn ./VirtMach test/echoIfTeen.asm 
+expect "Give number:" { send "13\r" }
+expect_after 
